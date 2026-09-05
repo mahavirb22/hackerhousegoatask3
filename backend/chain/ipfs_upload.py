@@ -132,6 +132,7 @@ def upload_matched_post_to_ipfs(
         "timestamp": ts,
         "image_ipfs_cid": image_cid,
         "image_ipfs_uri": f"ipfs://{image_cid}",
+        "privacy_policy": "GDPR-Compliant Zero-Knowledge Commitment. Raw 128-d biometric vectors are salted & hashed. No raw biometric coordinates stored on-chain.",
     }
     if additional_metadata:
         metadata.update(additional_metadata)

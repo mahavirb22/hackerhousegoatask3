@@ -397,6 +397,10 @@ export default function App() {
             </div>
             <h2 className="screen-title">3. On-Chain Verification Record</h2>
             <p className="screen-subtitle">Face metadata and SHA-256 data hash successfully committed to smart contract.</p>
+            <div style={{ marginTop: '0.65rem', background: '#F1F5F9', border: '1px solid #E2E8F0', padding: '0.4rem 0.85rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.775rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+              <ShieldCheck size={14} style={{ color: 'var(--accent-orange)' }} />
+              <span>GDPR-Compliant: Raw 128-d biometric vectors are salted & hashed. Zero biometrics exposed on-chain.</span>
+            </div>
           </div>
 
           {/* On-Chain Hashes & CIDs */}
