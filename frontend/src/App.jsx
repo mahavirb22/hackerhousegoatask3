@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, ShieldCheck, ShieldAlert, CheckCircle, ExternalLink, RefreshCw, AlertTriangle, ArrowRight, Lock, Eye } from 'lucide-react';
+import { Camera, Upload, ShieldCheck, ShieldAlert, CheckCircle, ExternalLink, RefreshCw, AlertTriangle, ArrowRight, Lock, Eye, ScanFace } from 'lucide-react';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState(1); // 1: Capture/Upload, 2: Match Candidates, 3: On-Chain Result
@@ -36,7 +36,7 @@ export default function App() {
       }
     } catch (err) {
       console.error('Camera access error:', err);
-      setCameraError('Camera access denied or unavailable. Please upload a file instead.');
+      setCameraError('Camera access denied or unavailable. Please upload an image file instead.');
     }
   };
 
@@ -89,7 +89,7 @@ export default function App() {
   // Step 1 -> Step 2: Start Scan Job & Poll Progress
   const handleStartScan = async () => {
     if (!selectedFile) {
-      setErrorMsg('Please select or capture a face image first.');
+      setErrorMsg('Please select or capture a subject face image first.');
       return;
     }
 
@@ -129,7 +129,7 @@ export default function App() {
         if (res.status === 'completed') {
           clearInterval(interval);
           setLoading(false);
-          setCurrentStep(2); // Advance to Step 2!
+          setCurrentStep(2); // Advance smoothly to Step 2
         } else if (res.status === 'failed') {
           clearInterval(interval);
           setLoading(false);
@@ -159,7 +159,7 @@ export default function App() {
       if (res.status === 'success') {
         setConfirmResult(res);
         setLoading(false);
-        setCurrentStep(3); // Advance to Step 3!
+        setCurrentStep(3); // Advance smoothly to Step 3
       } else {
         throw new Error(res.detail || 'Confirmation failed.');
       }
@@ -200,17 +200,20 @@ export default function App() {
       {/* Hidden Canvas for Camera Captures */}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-      {/* Top Header */}
+      {/* Professional Header Navigation Bar */}
       <header className="top-bar">
         <div className="brand-badge-logo">
-          <h1>FORENSIC EYE</h1>
-          <span className="tag-live">
+          <div className="logo-icon-box">
+            <ScanFace size={22} />
+          </div>
+          <h1>Forensic Eye</h1>
+          <span className="tag-live" style={{ marginLeft: '0.4rem' }}>
             <span className="pulsing-dot"></span>
             Polygon Amoy Verified
           </span>
         </div>
 
-        {/* 3-Step Wizard Navigation Indicator */}
+        {/* 3-Step Wizard Single-Line Stepper */}
         <nav className="stepper-nav">
           <div className={`step-item ${currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : ''}`}>
             <span className="step-num">1</span>
@@ -229,7 +232,7 @@ export default function App() {
 
       {/* Error Alert Box */}
       {errorMsg && (
-        <div style={{ background: 'rgba(239, 68, 68, 0.12)', border: '1px solid var(--border-red)', color: '#f87171', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ background: '#FEF2F2', border: '1px solid var(--border-red)', color: '#DC2626', padding: '1rem 1.25rem', borderRadius: '12px', marginBottom: '1.75rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 500 }}>
           <AlertTriangle size={20} />
           <span>{errorMsg}</span>
         </div>
@@ -245,7 +248,7 @@ export default function App() {
             <p className="screen-subtitle">Use live camera feed or upload a photo to extract 128-d facial embedding vectors.</p>
           </div>
 
-          {/* Mode Selector */}
+          {/* Input Mode Switcher */}
           <div className="tab-switcher">
             <button className={`tab-btn ${inputMode === 'upload' ? 'active' : ''}`} onClick={() => setInputMode('upload')}>
               <Upload size={16} /> File Upload
@@ -261,17 +264,21 @@ export default function App() {
               {previewUrl ? (
                 <div style={{ textAlign: 'center' }}>
                   <img src={previewUrl} alt="Subject Face Preview" className="upload-preview-img" />
-                  <div style={{ marginTop: '1rem' }}>
-                    <button className="btn-primary" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid var(--border-subtle)', boxShadow: 'none' }} onClick={() => { setSelectedFile(null); setPreviewUrl(null); }}>
-                      Change Photo
+                  <div style={{ marginTop: '1.25rem' }}>
+                    <button className="btn-secondary" onClick={() => { setSelectedFile(null); setPreviewUrl(null); }}>
+                      <RefreshCw size={14} /> Change Photo
                     </button>
                   </div>
                 </div>
               ) : (
                 <label className="dropzone">
-                  <Upload size={40} style={{ color: 'var(--accent-cyan)', marginBottom: '1rem' }} />
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.25rem' }}>Drop subject image here or click to browse</h3>
-                  <p style={{ fontSize: '0.825rem', color: 'var(--text-dim)' }}>Supports JPG, PNG, WEBP (Minimum 60x60 px face resolution)</p>
+                  <Upload size={40} style={{ color: 'var(--accent-orange)', marginBottom: '0.85rem' }} />
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Drop subject face photo here, or click to browse
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                    Supports JPG, PNG, WEBP (Minimum 60×60 px face resolution)
+                  </p>
                   <input type="file" accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
                 </label>
               )}
@@ -282,7 +289,7 @@ export default function App() {
           {inputMode === 'camera' && (
             <div>
               {cameraError ? (
-                <div style={{ padding: '2rem', textAlign: 'center', color: '#f87171' }}>{cameraError}</div>
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#DC2626', background: '#FEF2F2', borderRadius: '12px' }}>{cameraError}</div>
               ) : (
                 <div>
                   <div className="camera-viewfinder">
@@ -290,7 +297,7 @@ export default function App() {
                     <div className="reticle-overlay" />
                     <div className="scanline" />
                   </div>
-                  <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
                     <button className="btn-primary" onClick={capturePhoto} disabled={!isCameraActive}>
                       <Camera size={18} /> Capture Snapshot
                     </button>
@@ -300,7 +307,7 @@ export default function App() {
             </div>
           )}
 
-          {/* Start Scan Button */}
+          {/* Start Scan Trigger Button */}
           {previewUrl && !loading && (
             <div style={{ marginTop: '2rem', textAlign: 'right' }}>
               <button className="btn-primary" onClick={handleStartScan}>
@@ -329,12 +336,12 @@ export default function App() {
       {/* =================================================================== */}
       {currentStep === 2 && jobState && jobState.results && (
         <div className="screen-card">
-          <div className="screen-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div className="screen-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h2 className="screen-title">2. Candidate Matching Pages</h2>
               <p className="screen-subtitle">Ranked visual matches filtered to social platforms (X, Instagram, LinkedIn, Reddit).</p>
             </div>
-            <button className="btn-primary" style={{ background: 'transparent', border: '1px solid var(--border-subtle)', boxShadow: 'none' }} onClick={handleReset}>
+            <button className="btn-secondary" onClick={handleReset}>
               <RefreshCw size={14} /> New Scan
             </button>
           </div>
@@ -356,10 +363,10 @@ export default function App() {
 
                   <div className="cand-actions">
                     <a href={cand.url} target="_blank" rel="noopener noreferrer" className="link-out">
-                      Inspect Source Page <ExternalLink size={12} />
+                      Inspect Source Page <ExternalLink size={14} />
                     </a>
-                    <button className="btn-emerald" onClick={() => handleConfirmMatch(cand.url, idx)} disabled={loading}>
-                      <Lock size={14} /> Verify & Record On-Chain
+                    <button className="btn-primary" style={{ padding: '0.6rem 1.25rem', fontSize: '0.875rem' }} onClick={() => handleConfirmMatch(cand.url, idx)} disabled={loading}>
+                      <Lock size={15} /> Verify & Record On-Chain
                     </button>
                   </div>
                 </div>
@@ -368,7 +375,7 @@ export default function App() {
           </div>
 
           {loading && (
-            <div className="progress-box" style={{ marginTop: '1.5rem' }}>
+            <div className="progress-box">
               <div className="progress-info">
                 <span>Phase 4: Submitting record to Polygon Amoy smart contract...</span>
                 <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
@@ -384,9 +391,9 @@ export default function App() {
       {currentStep === 3 && confirmResult && (
         <div className="screen-card">
           <div className="screen-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-emerald)', marginBottom: '0.5rem' }}>
-              <CheckCircle size={22} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em' }}>IMMUTABLE RECORD STORED ON POLYGON AMOY</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--accent-emerald)', marginBottom: '0.5rem' }}>
+              <CheckCircle size={24} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.04em' }}>IMMUTABLE RECORD STORED ON POLYGON AMOY</span>
             </div>
             <h2 className="screen-title">3. On-Chain Verification Record</h2>
             <p className="screen-subtitle">Face metadata and SHA-256 data hash successfully committed to smart contract.</p>
@@ -420,7 +427,7 @@ export default function App() {
             <button className="btn-danger" onClick={handleRunTamperTest}>
               <ShieldAlert size={16} /> Run Tamper Test
             </button>
-            <button className="btn-primary" style={{ background: 'transparent', border: '1px solid var(--border-subtle)', boxShadow: 'none' }} onClick={handleReset}>
+            <button className="btn-secondary" onClick={handleReset}>
               <RefreshCw size={14} /> Start New Scan
             </button>
           </div>
@@ -429,25 +436,25 @@ export default function App() {
           {tamperResult && (
             <div className="tamper-fail-card">
               <div className="tamper-header">
-                <ShieldAlert size={26} />
+                <ShieldAlert size={28} />
                 <span>STANDOUT DEMO: TAMPER VERIFICATION FAILED!</span>
               </div>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
                 {tamperResult.message}
               </p>
 
-              <div className="result-hash-box" style={{ background: 'rgba(0,0,0,0.5)', borderColor: 'var(--border-red)' }}>
+              <div className="result-hash-box" style={{ background: '#FFFFFF', borderColor: 'var(--border-red)' }}>
                 <div className="hash-row">
-                  <span className="hash-label" style={{ color: 'var(--accent-emerald)' }}>IMMUTABLE ON-CHAIN HASH</span>
-                  <span className="hash-val" style={{ color: '#fff' }}>{tamperResult.original_on_chain_hash}</span>
+                  <span className="hash-label" style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>IMMUTABLE ON-CHAIN HASH</span>
+                  <span className="hash-val" style={{ color: 'var(--text-main)' }}>{tamperResult.original_on_chain_hash}</span>
                 </div>
                 <div className="hash-row">
-                  <span className="hash-label" style={{ color: 'var(--accent-red)' }}>MUTATED RECOMPUTED HASH</span>
+                  <span className="hash-label" style={{ color: 'var(--accent-red)', fontWeight: 700 }}>MUTATED RECOMPUTED HASH</span>
                   <span className="hash-val" style={{ color: 'var(--accent-red)' }}>{tamperResult.tampered_recomputed_hash}</span>
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.8rem', color: 'var(--accent-amber)', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: '0.825rem', color: '#B45309', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                 Mutation Detail: {tamperResult.mutation_details} | Match Boolean: <strong>FALSE (Tamper Detected)</strong>
               </div>
             </div>
