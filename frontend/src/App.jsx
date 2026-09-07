@@ -347,7 +347,7 @@ export default function App() {
           </div>
 
           <div className="candidates-list">
-            {jobState.results.reverse_search.top_candidates.map((cand, idx) => (
+            {jobState.results.reverse_search.top_candidates.slice(1).map((cand, idx) => (
               <div key={idx} className="candidate-card">
                 <img src={cand.thumbnail} alt={cand.title} className="cand-thumb" />
                 <div className="cand-details">
@@ -365,7 +365,7 @@ export default function App() {
                     <a href={cand.url} target="_blank" rel="noopener noreferrer" className="link-out">
                       Inspect Source Page <ExternalLink size={14} />
                     </a>
-                    <button className="btn-primary" style={{ padding: '0.6rem 1.25rem', fontSize: '0.875rem' }} onClick={() => handleConfirmMatch(cand.url, idx)} disabled={loading}>
+                    <button className="btn-primary" style={{ padding: '0.6rem 1.25rem', fontSize: '0.875rem' }} onClick={() => handleConfirmMatch(cand.url, idx + 1)} disabled={loading}>
                       <Lock size={15} /> Verify & Record On-Chain
                     </button>
                   </div>
